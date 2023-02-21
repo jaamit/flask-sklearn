@@ -21,7 +21,7 @@ class ApiTestCase(unittest.TestCase):
     #         'd': 4,
     #         'n_classes': 3,
     #     })
-    #     model_id = resp['id']
+        # model_id = resp['id']
     #     # read
     #     resp = self._request('GET', f'/models/{model_id}/')
     #     assert resp['model'] == 'SGDClassifier'
@@ -31,16 +31,16 @@ class ApiTestCase(unittest.TestCase):
     #     assert numpy.isclose(resp['params']['alpha'], 0.0001)
     #     assert resp['n_trained'] == 0
 
-    # def test_2_wrong_write(self):
-    #     """ test erroneous write operation """
-    #     with self.assertRaises(Exception) as error:
-    #         self._request('POST', '/models/', {
-    #             'model': 'ERROR',
-    #             'params': {'alpha': 0.0001},
-    #             'd': 4,
-    #             'n_classes': 2,
-    #         })
-    #     assert error.exception.response.status_code == 400
+    def test_2_wrong_write(self):
+        """ test erroneous write operation """
+        with self.assertRaises(Exception) as error:
+            self._request('POST', '/models/', {
+                'model': 'ERROR',
+                'params': {'alpha': 0.0001},
+                'd': 4,
+                'n_classes': 2,
+            })
+        assert error.exception.response.status_code == 400
 
     # def test_3_wrong_read(self):
     #     """ test erroneous read operation """
