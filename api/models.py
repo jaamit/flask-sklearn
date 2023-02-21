@@ -5,7 +5,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import CategoricalNB
 import logging
-from db import persist_model
+from db import persist_model, retrieve_model
 
 class ClassifierEnum(Enum):
     MLPClassifier = 0
@@ -39,3 +39,7 @@ def create_classifier_model(request_params):
     # persist in MySQL DB
     unique_id = persist_model(model_name, model_params, model, request_params["d"], request_params["n_classes"], n_trained=0)
     return unique_id
+
+def fetch_model(model_id):
+    model_metadata = retrieve_model(model_id)
+    return model_metadata

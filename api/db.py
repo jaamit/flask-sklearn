@@ -29,6 +29,28 @@ def persist_model(model_name, model_params, model, num_features, num_classes, n_
     connection.close()
     return id
 
+def retrieve_model(id):
+    connection = connect()
+    cursor = connection.cursor()
+    cursor.execute("""USE ModelDB""")
+    connection.commit()
+
+    sql = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
+    mid = f'{id}'
+    cursor.execute(sql, mid)
+    records = cursor.fetchall()
+    print("Total rows are: ", len(records))
+    result = {}
+    for row in records:
+        result['model'] = row[1]
+        result['params'] = json.loads(row[2])
+        result['d'] = row[4]
+        result['n_classes'] = row[5]
+        result['n_trained'] = row[6]
+    
+    cursor.close()
+    return result
+
 def create_table():
     connection = connect()
     cursor = connection.cursor()

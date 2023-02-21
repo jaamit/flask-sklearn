@@ -22,15 +22,14 @@ class ApiTestCase(unittest.TestCase):
             "n_classes": 3
         })
         model_id = resp['id']
-        print(model_id)
-    #     # read
-    #     resp = self._request('GET', f'/models/{model_id}/')
-    #     assert resp['model'] == 'SGDClassifier'
-    #     assert resp['params']['penalty'] == 'l1'
-    #     assert resp['d'] == 4
-    #     assert resp['n_classes'] == 3
-    #     assert numpy.isclose(resp['params']['alpha'], 0.0001)
-    #     assert resp['n_trained'] == 0
+        # read
+        resp = self._request('GET', f'/models/1/')
+        assert resp['model'] == 'SGDClassifier'
+        assert resp['params']['penalty'] == 'l1'
+        assert resp['d'] == 4
+        assert resp['n_classes'] == 3
+        assert numpy.isclose(resp['params']['alpha'], 0.0001)
+        assert resp['n_trained'] == 0
 
     def test_2_wrong_write(self):
         """ test erroneous write operation """
