@@ -1,8 +1,10 @@
 from flask import Flask, jsonify, make_response, request
 from http import HTTPStatus
 from models import create_classifier_model
+from db import create_table, drop_table
 
 application = Flask(__name__)
+create_table()
 
 @application.route("/health/")
 def health_check():
@@ -13,8 +15,8 @@ def health_check():
 @application.post("/models/")
 def create_model():
     request_data = request.get_json()
-    resp = create_classifier_model(request_data)
-    resp = {'status' : 'ok'}
+    unique_id = create_classifier_model(request_data)
+    resp = {'id' : unique_id}
     return make_response(jsonify(resp), HTTPStatus.OK)
 	
 

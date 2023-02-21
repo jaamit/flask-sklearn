@@ -12,16 +12,17 @@ class ApiTestCase(unittest.TestCase):
         resp = self._request('GET', '/health/')
         assert resp['status'] == 'ok'
 
-    # def test_1_read_write(self):
-    #     """ test read/write operation """
-    #     # create
-    #     resp = self._request('POST', '/models/', {
-    #         "model": "SGDClassifier",
-    #         "params": {"alpha": 0.0001, "penalty": 'l1'},
-    #         "d": 4,
-    #         "n_classes": 3,
-    #     })
-        # model_id = resp['id']
+    def test_1_read_write(self):
+        """ test read/write operation """
+        # create
+        resp = self._request('POST', '/models/', {
+            "model": "SGDClassifier",
+            "params": {"alpha": 0.0001, "penalty": "l1"},
+            "d": 4,
+            "n_classes": 3
+        })
+        model_id = resp['id']
+        print(model_id)
     #     # read
     #     resp = self._request('GET', f'/models/{model_id}/')
     #     assert resp['model'] == 'SGDClassifier'
