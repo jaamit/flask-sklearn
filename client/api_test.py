@@ -16,10 +16,10 @@ class ApiTestCase(unittest.TestCase):
     #     """ test read/write operation """
     #     # create
     #     resp = self._request('POST', '/models/', {
-    #         'model': 'SGDClassifier',
-    #         'params': {'alpha': 0.0001, 'penalty': 'l1'},
-    #         'd': 4,
-    #         'n_classes': 3,
+    #         "model": "SGDClassifier",
+    #         "params": {"alpha": 0.0001, "penalty": 'l1'},
+    #         "d": 4,
+    #         "n_classes": 3,
     #     })
         # model_id = resp['id']
     #     # read
@@ -35,10 +35,10 @@ class ApiTestCase(unittest.TestCase):
         """ test erroneous write operation """
         with self.assertRaises(Exception) as error:
             self._request('POST', '/models/', {
-                'model': 'ERROR',
-                'params': {'alpha': 0.0001},
-                'd': 4,
-                'n_classes': 2,
+                "model": "ERROR",
+                "params": {"alpha": 0.0001},
+                "d": 4,
+                "n_classes": 2
             })
         assert error.exception.response.status_code == 400
 
