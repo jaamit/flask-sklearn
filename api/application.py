@@ -1,13 +1,11 @@
 from flask import Flask, jsonify, make_response
+from http import HTTPStatus
 application = Flask(__name__)
 
 @application.route("/health/")
 def health_check():
-	# return 'ok', 200
 	resp = {'status' : 'ok'}
-	return make_response(jsonify(resp), 200)
-	# return jsonify(resp)
-    # return make_response(jsonify(), 200)
+	return make_response(jsonify(resp), HTTPStatus.OK)
 
 
 if __name__ == '__main__':
