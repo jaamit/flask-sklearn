@@ -2,6 +2,8 @@ import MySQLdb
 import os
 import pickle
 import json
+from http import HTTPStatus
+from flask import abort
 
 def connect():
     """ https://mysqlclient.readthedocs.io/user_guide.html#mysqldb """
@@ -30,26 +32,32 @@ def persist_model(model_name, model_params, model, num_features, num_classes, n_
     return id
 
 def retrieve_model(id):
-    connection = connect()
-    cursor = connection.cursor()
-    cursor.execute("""USE ModelDB""")
-    connection.commit()
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+        cursor.execute("""USE ModelDB""")
+        connection.commit()
 
-    sql = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
-    mid = f'{id}'
-    cursor.execute(sql, mid)
-    records = cursor.fetchall()
-    print("Total rows are: ", len(records))
-    result = {}
-    for row in records:
-        result['model'] = row[1]
-        result['params'] = json.loads(row[2])
-        result['d'] = row[4]
-        result['n_classes'] = row[5]
-        result['n_trained'] = row[6]
-    
-    cursor.close()
-    return result
+        sql = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
+        mid = f'{id}'
+        cursor.execute(sql, mid)
+        records = cursor.fetchall()
+        print("Total rows are: ", len(records))
+        result = {}
+        for row in records:
+            result['model'] = row[1]
+            result['params'] = json.loads(row[2])
+            result['d'] = row[4]
+            result['n_classes'] = row[5]
+            result['n_trained'] = row[6]
+
+        cursor.close()
+        return result
+    except:
+        abort(HTTPStatus.NOT_FOUND, description = "Invalid Model ID")
+    finally:
+        if connection:
+            connection.close()
 
 def create_table():
     connection = connect()

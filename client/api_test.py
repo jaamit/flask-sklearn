@@ -42,11 +42,11 @@ class ApiTestCase(unittest.TestCase):
             })
         assert error.exception.response.status_code == 400
 
-    # def test_3_wrong_read(self):
-    #     """ test erroneous read operation """
-    #     with self.assertRaises(Exception) as error:
-    #         self._request('GET', '/models/123456789/')
-    #     assert error.exception.response.status_code == 404
+    def test_3_wrong_read(self):
+        """ test erroneous read operation """
+        with self.assertRaises(Exception) as error:
+            self._request('GET', '/models/123456789/')
+        assert error.exception.response.status_code == 404
 
     # def test_4_train_predict(self):
     #     """ test train/predict operation """
