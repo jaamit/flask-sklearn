@@ -22,8 +22,9 @@ class ApiTestCase(unittest.TestCase):
             "n_classes": 3
         })
         model_id = resp['id']
+        print(model_id)
         # read
-        resp = self._request('GET', f'/models/1/')
+        resp = self._request('GET', f'/models/{model_id}/')
         assert resp['model'] == 'SGDClassifier'
         assert resp['params']['penalty'] == 'l1'
         assert resp['d'] == 4

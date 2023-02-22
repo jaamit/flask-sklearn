@@ -14,22 +14,26 @@ def connect():
 
 # connect to db and persist
 def persist_model(model_name, model_params, model, num_features, num_classes, n_trained):
-
-    connection = connect()
-    cursor = connection.cursor()
-    cursor.execute("""USE ModelDB""")
-    connection.commit()
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+        cursor.execute("""USE ModelDB""")
+        connection.commit()
     
-    sql = """INSERT INTO MODEL_METADATA (MODEL_NAME, MODEL_PARAMS, MODEL_PKL, NUM_FEATURES, NUM_CLASSES, NUM_TRAINED) VALUES (%s, %s, %s, %s, %s, %s)"""
-    val = (model_name, json.dumps(model_params), pickle.dumps(model), num_features, num_classes, n_trained)
-    cursor.execute(sql, val)
-    connection.commit()
+        sql_query = """INSERT INTO MODEL_METADATA (MODEL_NAME, MODEL_PARAMS, MODEL_PKL, NUM_FEATURES, NUM_CLASSES, NUM_TRAINED) VALUES (%s, %s, %s, %s, %s, %s)"""
+        val = (model_name, json.dumps(model_params), pickle.dumps(model), num_features, num_classes, n_trained)
+        cursor.execute(sql_query, val)
+        connection.commit()
     
-    id = cursor.lastrowid
+        id = cursor.lastrowid
 
-    cursor.close()
-    connection.close()
-    return id
+        cursor.close()
+        return id
+    except:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description = "Unable to save model")
+    finally:
+        if connection:
+            connection.close()
 
 def retrieve_model(id):
     try:
@@ -38,21 +42,16 @@ def retrieve_model(id):
         cursor.execute("""USE ModelDB""")
         connection.commit()
 
-        sql = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
-        mid = f'{id}'
-        cursor.execute(sql, mid)
+        sql_query = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
+        print(id)
+        cursor.execute(sql_query, (id,))
         records = cursor.fetchall()
-        print("Total rows are: ", len(records))
-        result = {}
-        for row in records:
-            result['model'] = row[1]
-            result['params'] = json.loads(row[2])
-            result['d'] = row[4]
-            result['n_classes'] = row[5]
-            result['n_trained'] = row[6]
+        # No row found for model_id
+        if not records:
+            raise Exception
 
         cursor.close()
-        return result
+        return records
     except:
         abort(HTTPStatus.NOT_FOUND, description = "Invalid Model ID")
     finally:

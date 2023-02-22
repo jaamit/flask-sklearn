@@ -1,10 +1,10 @@
 from flask import Flask, jsonify, make_response, request
 from http import HTTPStatus
-from models import create_classifier_model, fetch_model
+from models import create_classifier_model, fetch_model, train_the_model
 from db import create_table
 
 application = Flask(__name__)
-create_table()
+# create_table()
 
 @application.route("/health/")
 def health_check():
@@ -24,6 +24,14 @@ def get_model(model_id):
 	model_metadata = fetch_model(model_id)
 	return make_response(jsonify(model_metadata), HTTPStatus.OK)
 
+@application.post("/models/<int:model_id>/train/")
+def train_model(model_id):
+	print(model_id)
+	request_data = request.get_json()
+	train_the_model(model_id, request_data)
+	resp = {'status' : 'ok'}
+	return make_response(jsonify(resp), HTTPStatus.OK)
+	
 
 if __name__ == '__main__':
 	application.run(host='0.0.0.0', port=8000)

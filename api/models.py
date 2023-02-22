@@ -6,6 +6,8 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import CategoricalNB
 import logging
 from db import persist_model, retrieve_model
+import json
+import pickle
 
 class ClassifierEnum(Enum):
     MLPClassifier = 0
@@ -41,5 +43,33 @@ def create_classifier_model(request_params):
     return unique_id
 
 def fetch_model(model_id):
-    model_metadata = retrieve_model(model_id)
-    return model_metadata
+    records = retrieve_model(model_id)
+    print("Total rows are: ", len(records))
+    result = {}
+    for row in records:
+        result['model'] = row[1]
+        result['params'] = json.loads(row[2])
+        result['d'] = row[4]
+        result['n_classes'] = row[5]
+        result['n_trained'] = row[6]
+    
+    return result
+
+def train_the_model(model_id, request_data):
+    records = retrieve_model(model_id)
+    print("train_the_model", model_id)
+    result = {}
+    for row in records:
+        result['model'] = row[1]
+        result['params'] = json.loads(row[2])
+        result['pkl_model'] = pickle.loads(row[3])
+        result['d'] = row[4]
+        result['n_classes'] = row[5]
+        result['n_trained'] = row[6]
+
+    X = request_data["x"]
+    y = request_data["y"]
+    # print(len(X))
+    # print(X)
+    # print(y)
+    clf = result['pkl_model'].fit(X, y)
