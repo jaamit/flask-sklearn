@@ -49,30 +49,30 @@ class ApiTestCase(unittest.TestCase):
             self._request('GET', '/models/123456789/')
         assert error.exception.response.status_code == 404
 
-    # def test_4_train_predict(self):
-    #     """ test train/predict operation """
-    #     n = 100
-    #     d = 4
-    #     # create
-    #     resp = self._request('POST', '/models/', {
-    #         'model': 'SGDClassifier',
-    #         'params': {},
-    #         'd': d,
-    #         'n_classes': 2,
-    #     })
-    #     model_id = resp['id']
-    #     # train
-    #     X = numpy.random.randn(n, d)
-    #     W = numpy.random.randn(d)
-    #     Y = X.dot(W) > 0
-    #     for i in range(n):
-    #         self._request('POST', f'/models/{model_id}/train/', {
-    #             'x': list(X[i, :]),
-    #             'y': int(Y[i]),
-    #         })
-    #     # read
-    #     resp = self._request('GET', f'/models/{model_id}/')
-    #     assert resp['n_trained'] == n
+    def test_4_train_predict(self):
+        """ test train/predict operation """
+        n = 100
+        d = 4
+        # create
+        resp = self._request('POST', '/models/', {
+            "model": "SGDClassifier",
+            "params": {},
+            "d": d,
+            "n_classes": 2,
+        })
+        model_id = resp['id']
+        # train
+        X = numpy.random.randn(n, d)
+        W = numpy.random.randn(d)
+        Y = X.dot(W) > 0
+        for i in range(n):
+            self._request('POST', f'/models/{model_id}/train/', {
+                'x': list(X[i, :]),
+                'y': int(Y[i]),
+            })
+        # read
+        resp = self._request('GET', f'/models/{model_id}/')
+        assert resp['n_trained'] == n
     #     # predict
     #     xb64 = 'WzEuMTEsMi4yMiwzLjMzLC00LjQ0XQ=='
     #     resp = self._request('GET', f'/models/{model_id}/predict/?x={xb64}')

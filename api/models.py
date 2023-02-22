@@ -5,9 +5,10 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import CategoricalNB
 import logging
-from db import persist_model, retrieve_model
+from db import persist_model, retrieve_model, update_num_train
 import json
 import pickle
+import numpy as np
 
 class ClassifierEnum(Enum):
     MLPClassifier = 0
@@ -37,9 +38,10 @@ def create_classifier_model(request_params):
         # Flexible to add more models. Solution is for 3 models only for the moment 
         abort(HTTPStatus.BAD_REQUEST, description = "Invalid Model Name")
 
-    print(f"Request to create {model_name} with {model_params}")
+    
     # persist in MySQL DB
     unique_id = persist_model(model_name, model_params, model, request_params["d"], request_params["n_classes"], n_trained=0)
+    print(f"Request to create {model_name} with {model_params} id {unique_id}")
     return unique_id
 
 def fetch_model(model_id):
@@ -57,7 +59,7 @@ def fetch_model(model_id):
 
 def train_the_model(model_id, request_data):
     records = retrieve_model(model_id)
-    print("train_the_model", model_id)
+    print("Train_the_model", model_id)
     result = {}
     for row in records:
         result['model'] = row[1]
@@ -67,9 +69,11 @@ def train_the_model(model_id, request_data):
         result['n_classes'] = row[5]
         result['n_trained'] = row[6]
 
-    X = request_data["x"]
-    y = request_data["y"]
-    # print(len(X))
-    # print(X)
-    # print(y)
-    clf = result['pkl_model'].fit(X, y)
+    X = [request_data["x"]]
+    y = [request_data["y"]]
+    y_all = np.arange(result['n_classes'])
+
+    clf = result['pkl_model'].partial_fit(X, y, classes=(y_all,))
+    update_num_train(model_id, result['n_trained']+1)
+
+

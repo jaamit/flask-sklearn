@@ -17,8 +17,6 @@ def persist_model(model_name, model_params, model, num_features, num_classes, n_
     try:
         connection = connect()
         cursor = connection.cursor()
-        cursor.execute("""USE ModelDB""")
-        connection.commit()
     
         sql_query = """INSERT INTO MODEL_METADATA (MODEL_NAME, MODEL_PARAMS, MODEL_PKL, NUM_FEATURES, NUM_CLASSES, NUM_TRAINED) VALUES (%s, %s, %s, %s, %s, %s)"""
         val = (model_name, json.dumps(model_params), pickle.dumps(model), num_features, num_classes, n_trained)
@@ -39,8 +37,6 @@ def retrieve_model(id):
     try:
         connection = connect()
         cursor = connection.cursor()
-        cursor.execute("""USE ModelDB""")
-        connection.commit()
 
         sql_query = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
         print(id)
@@ -58,15 +54,25 @@ def retrieve_model(id):
         if connection:
             connection.close()
 
+def update_num_train(model_id, num_train):
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        sql_query = "UPDATE MODEL_METADATA SET NUM_TRAINED = %s WHERE MODEL_ID = %s"
+        cursor.execute(sql_query, (num_train, model_id,))
+
+        connection.commit()
+        cursor.close()
+    except:
+        abort(HTTPStatus.INTERNAL_SERVER_ERROR, description = "SQL ERROR")
+    finally:
+        if connection:
+            connection.close()
+
 def create_table():
     connection = connect()
     cursor = connection.cursor()
-    #create database
-    cursor.execute("""CREATE DATABASE IF NOT EXISTS ModelDB""")
-    connection.commit()
-    
-    cursor.execute("""USE ModelDB""")
-    connection.commit()
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS MODEL_METADATA (
     MODEL_ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -79,19 +85,13 @@ def create_table():
     )''')
     connection.commit()
 
-    cursor.execute("DESCRIBE ModelDB.MODEL_METADATA")
-    indexList = cursor.fetchall()
-
-    print(indexList)    
-    
     cursor.close()
     connection.close()
 
 def drop_table():
     connection = connect()
     cursor = connection.cursor()
-    cursor.execute("""USE ModelDB""")
-    connection.commit()
+    
     cursor.execute("DROP TABLE MODEL_METADATA")
     connection.commit()
     cursor.close()
