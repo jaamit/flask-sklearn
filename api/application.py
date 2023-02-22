@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, make_response, request
 from http import HTTPStatus
-from models import create_classifier_model, fetch_model, train_the_model, predict_model
+from models import create_classifier_model, fetch_model, train_the_model, predict_model, group_models_by_training_stage
 from db import create_table, drop_table
 import base64
 import json
@@ -54,7 +54,19 @@ def most_trained_model_score():
 
 @application.get("/models/groups/")
 def model_groups():
-	resp = {'status' : 'ok'}
+	group_models = group_models_by_training_stage()
+	group_res = {}
+	group_list = []
+	
+	for i in group_models:
+		group_res.setdefault(i[0], []).append(i[1])
+	for k in group_res:
+		rd = {}
+		rd['n_trained'] = k
+		rd["model_ids"] = group_res[k]
+		group_list.append(rd)
+    	
+	resp = {'groups' : group_list}
 	return make_response(jsonify(resp), HTTPStatus.OK)
 
 

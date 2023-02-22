@@ -39,7 +39,6 @@ def retrieve_model(id):
         cursor = connection.cursor()
 
         sql_query = "SELECT * FROM MODEL_METADATA WHERE MODEL_ID = %s"
-        print(id)
         cursor.execute(sql_query, (id,))
         records = cursor.fetchall()
         # No row found for model_id
@@ -69,6 +68,34 @@ def update_num_train(model_id, num_train, model):
     finally:
         if connection:
             connection.close()
+
+def retrieve_model_groups():
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        sql_query = """SELECT M1.NUM_TRAINED, M1.MODEL_ID
+        FROM MODEL_METADATA AS M1
+        INNER JOIN MODEL_METADATA AS M2
+        ON M1.NUM_TRAINED = M2.NUM_TRAINED
+        WHERE M1.NUM_TRAINED > 0
+        ORDER BY M1.NUM_TRAINED 
+        """
+        cursor.execute(sql_query)
+        records = cursor.fetchall()
+        print(type(records))
+        # No row found for model_id
+        # if not records:
+        #     raise Exception
+
+        cursor.close()
+        return records
+    except:
+        print("SHIT")
+        # abort(HTTPStatus.NOT_FOUND, description = "Invalid Model ID")
+    finally:
+        if connection:
+            connection.close() 
 
 def create_table():
     connection = connect()

@@ -5,7 +5,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.naive_bayes import CategoricalNB
 import logging
-from db import persist_model, retrieve_model, update_num_train
+from db import persist_model, retrieve_model, update_num_train, retrieve_model_groups
 import json
 import pickle
 import numpy as np
@@ -97,3 +97,6 @@ def predict_model(model_id, x):
     y = result['pkl_model'].predict([x])
     print(f'Model Prediction {y} for model_id {model_id}')
     return y
+
+def group_models_by_training_stage():
+    return retrieve_model_groups()

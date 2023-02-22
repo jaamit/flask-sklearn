@@ -146,6 +146,11 @@ class ApiTestCase(unittest.TestCase):
     #         resp_score = resp_model_id_to_score[m_id]
     #         assert numpy.isclose(training_score, resp_score)
 
+    def test_7_group_models(self):
+        """ Get groups of models """
+        resp = self._request('GET', f'/models/groups/')
+        print(resp)
+    
     @classmethod
     def _request(self, method, path, json=None):
         url = f'{self.HOST}{path}'
