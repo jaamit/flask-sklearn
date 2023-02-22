@@ -46,7 +46,7 @@ def create_classifier_model(request_params):
 
 def fetch_model(model_id):
     records = retrieve_model(model_id)
-    print("Total rows are: ", len(records))
+    print("Total rows are: ", len(records), " for model id ", model_id)
     result = {}
     for row in records:
         result['model'] = row[1]
@@ -74,6 +74,20 @@ def train_the_model(model_id, request_data):
     y_all = np.arange(result['n_classes'])
 
     clf = result['pkl_model'].partial_fit(X, y, classes=(y_all,))
-    update_num_train(model_id, result['n_trained']+1)
+    update_num_train(model_id, result['n_trained']+1, clf)
 
+def predict_model(model_id, x):
+    records = retrieve_model(model_id)
+    print("Predict model", model_id)
+    result = {}
+    for row in records:
+        result['model'] = row[1]
+        result['params'] = json.loads(row[2])
+        result['pkl_model'] = pickle.loads(row[3])
+        result['d'] = row[4]
+        result['n_classes'] = row[5]
+        result['n_trained'] = row[6]
 
+    y = result['pkl_model'].predict([x])
+    print(f'Model Prediction {y} for model_id {model_id}')
+    return y

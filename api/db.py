@@ -54,13 +54,13 @@ def retrieve_model(id):
         if connection:
             connection.close()
 
-def update_num_train(model_id, num_train):
+def update_num_train(model_id, num_train, model):
     try:
         connection = connect()
         cursor = connection.cursor()
 
-        sql_query = "UPDATE MODEL_METADATA SET NUM_TRAINED = %s WHERE MODEL_ID = %s"
-        cursor.execute(sql_query, (num_train, model_id,))
+        sql_query = "UPDATE MODEL_METADATA SET NUM_TRAINED = %s, MODEL_PKL = %s WHERE MODEL_ID = %s"
+        cursor.execute(sql_query, (num_train, pickle.dumps(model) , model_id,))
 
         connection.commit()
         cursor.close()

@@ -73,10 +73,10 @@ class ApiTestCase(unittest.TestCase):
         # read
         resp = self._request('GET', f'/models/{model_id}/')
         assert resp['n_trained'] == n
-    #     # predict
-    #     xb64 = 'WzEuMTEsMi4yMiwzLjMzLC00LjQ0XQ=='
-    #     resp = self._request('GET', f'/models/{model_id}/predict/?x={xb64}')
-    #     assert resp['y'] < 2
+        # predict
+        xb64 = 'WzEuMTEsMi4yMiwzLjMzLC00LjQ0XQ=='
+        resp = self._request('GET', f'/models/{model_id}/predict/?x={xb64}')
+        assert resp['y'] < 2
 
     # def test_5_train_errors(self):
     #     """ test erroneous train operation """
