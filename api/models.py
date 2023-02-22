@@ -73,7 +73,10 @@ def train_the_model(model_id, request_data):
     y = [request_data["y"]]
     y_all = np.arange(result['n_classes'])
 
-    clf = result['pkl_model'].partial_fit(X, y, classes=(y_all,))
+    try:
+        clf = result['pkl_model'].partial_fit(X, y, classes=(y_all,))
+    except:
+        abort(HTTPStatus.BAD_REQUEST, description = "Invalid X/y Dimensions")
     update_num_train(model_id, result['n_trained']+1, clf)
 
 def predict_model(model_id, x):
@@ -88,6 +91,9 @@ def predict_model(model_id, x):
         result['n_classes'] = row[5]
         result['n_trained'] = row[6]
 
+    if len(x) != result['d']:
+        abort(HTTPStatus.BAD_REQUEST, description = "Invalid Feature Vector")
+    
     y = result['pkl_model'].predict([x])
     print(f'Model Prediction {y} for model_id {model_id}')
     return y

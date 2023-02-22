@@ -78,36 +78,36 @@ class ApiTestCase(unittest.TestCase):
         resp = self._request('GET', f'/models/{model_id}/predict/?x={xb64}')
         assert resp['y'] < 2
 
-    # def test_5_train_errors(self):
-    #     """ test erroneous train operation """
-    #     d = 4
-    #     n_classes = 3
-    #     # create
-    #     resp = self._request('POST', '/models/', {
-    #         'model': 'SGDClassifier',
-    #         'params': {},
-    #         'd': d,
-    #         'n_classes': n_classes,
-    #     })
-    #     model_id = resp['id']
-    #     # wrong x
-    #     X = numpy.random.randn(d + 1)
-    #     Y = numpy.random.randint(0, n_classes)
-    #     with self.assertRaises(Exception) as error:
-    #         self._request('POST', f'/models/{model_id}/train/', {
-    #             'x': list(X),
-    #             'y': int(Y),
-    #         })
-    #     assert error.exception.response.status_code == 400
-    #     # wrong y
-    #     X = numpy.random.randn(d)
-    #     Y = n_classes
-    #     with self.assertRaises(Exception) as error:
-    #         self._request('POST', f'/models/{model_id}/train/', {
-    #             'x': list(X),
-    #             'y': int(Y),
-    #         })
-    #     assert error.exception.response.status_code == 400
+    def test_5_train_errors(self):
+        """ test erroneous train operation """
+        d = 4
+        n_classes = 3
+        # create
+        resp = self._request('POST', '/models/', {
+            'model': 'SGDClassifier',
+            'params': {},
+            'd': d,
+            'n_classes': n_classes,
+        })
+        model_id = resp['id']
+        # wrong x
+        X = numpy.random.randn(d + 1)
+        Y = numpy.random.randint(0, n_classes)
+        with self.assertRaises(Exception) as error:
+            self._request('POST', f'/models/{model_id}/train/', {
+                'x': list(X),
+                'y': int(Y),
+            })
+        assert error.exception.response.status_code == 400
+        # wrong y
+        X = numpy.random.randn(d)
+        Y = n_classes
+        with self.assertRaises(Exception) as error:
+            self._request('POST', f'/models/{model_id}/train/', {
+                'x': list(X),
+                'y': int(Y),
+            })
+        assert error.exception.response.status_code == 400
 
     # def test_6_train_score(self):
     #     """ test train score """
